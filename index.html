@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <!-- ============================================
+         📱 메타 정보 및 설정
+         ============================================ -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>영어 단어장 Mobile</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-ui-lang="ko">
+    <!-- 헤더 -->
+    <div class="header">
+        <div class="header-title">📚 단어장</div>
+        <div class="header-icons">
+            <button class="icon-btn" onclick="toggleStudyFullscreen()" id="fullscreenBtn" title="학습창 풀스크린">⛶</button>
+            <button class="icon-btn" onclick="toggleLanguage()">🌐</button>
+            <button class="icon-btn" onclick="toggleDarkMode()" id="themeBtn">🌙</button>
+            <button class="icon-btn" onclick="showStatsModal()">📊</button>
+            <button class="icon-btn" onclick="showMenu()">⚙️</button>
+        </div>
+    </div>
+
+    <!-- 모드 선택 (가로 탭) -->
+    <div class="mode-selector" id="modeSelector">
+        <button class="mode-btn active" data-mode="study" onclick="selectMode('study', event, this)">
+            <div class="mode-icon">📖</div>
+            <div id="modeStudyText">깜박이</div>
+        </button>
+        <button class="mode-btn" data-mode="quiz" onclick="selectMode('quiz', event, this)">
+            <div class="mode-icon">✍️</div>
+            <div id="modeQuizText">퀴즈</div>
+        </button>
+        <button class="mode-btn" data-mode="srs" onclick="selectMode('srs', event, this)">
+            <div class="mode-icon">🔄</div>
+            <div id="modeSRSText">SRS</div>
+        </button>
+        <button class="mode-btn" data-mode="dialog" onclick="selectMode('dialog', event, this)">
+            <div class="mode-icon">💬</div>
+            <div id="modeDialogText">회화</div>
+        </button>
+    </div>
+
+    <!-- 컨트롤 바 (깜박이) -->
+    <div class="control-bar" id="studyControls">
+        <div class="control-chip" onclick="showRangePopup()">📍 <span id="rangeText">1-300</span></div>
+        <div class="control-chip" onclick="showSpeedPopup()">⚡ <span id="speedText">보통</span></div>
+        <div class="control-chip" onclick="showSizePopup()">🔤 <span id="sizeText">48px</span></div>
+        <div class="control-chip" onclick="showReadingPopup()"><span id="readingChip">🎓 독해영작</span></div>
+        <div class="control-chip" onclick="showFilterPopup()"><span id="filterChip1">🔍 필터</span></div>
+        <div class="control-chip" onclick="restartFromBeginning()"><span id="restartChip1">🔄 처음부터</span></div>
+    </div>
+
+    <!-- 컨트롤 바 (퀴즈) -->
+    <div class="control-bar" id="quizControls" style="display: none;">
+        <div class="control-chip" onclick="showRangePopup()">📍 <span id="rangeText2">1-300</span></div>
+        <div class="control-chip quiz-count-chip">
+            <button class="quiz-count-btn" onclick="adjustQuizCount(-5)">➖</button>
+            <span id="quizCountText">20<span id="problemsText">문제</span></span>
+            <button class="quiz-count-btn" onclick="adjustQuizCount(5)">➕</button>
+        </div>
+        <div class="control-chip" onclick="showQuizSettingsPopup()"><span id="quizSettingsChip">⚙️ 퀴즈설정</span></div>
+        <div class="control-chip primary" onclick="startQuizFromControl()"><span id="startChip">▶ 시작</span></div>
+    </div>
+
+    <!-- 컨트롤 바 (SRS) -->
+    <div class="control-bar" id="srsControls" style="display: none;">
+        <div class="control-chip" onclick="showRangePopup()">📍 <span id="rangeText3">1-300</span></div>
+        <div class="control-chip" onclick="showSRSSettingsPopup()"><span id="srsSettingsChip">🔄 SRS 설정</span></div>
+        <div class="control-chip" onclick="showFilterPopup()"><span id="filterChip2">🔍 필터</span></div>
+        <div class="control-chip" onclick="restartFromBeginning()"><span id="restartChip2">🔄 처음부터</span></div>
+    </div>
+
+    <!-- 컨트롤 바 (회화) -->
+    <div class="control-bar" id="dialogControls" style="display: none;">
+        <div class="control-chip" onclick="showDialogSettingsPopup()"><span id="dialogSettingsChip">💬 회화 설정</span></div>
+        <div class="control-chip" onclick="showTTSSettingsPopup()"><span id="ttsSettingsChip">🎤 음성 설정</span></div>
+        <div class="control-chip primary" onclick="startApp()"><span id="startChip2">▶ 시작</span></div>
+    </div>
+
+    <!-- 카드 영역 -->
+    <div class="card-area">
+        <div class="flash-card" id="flashCard">
+            <div class="card-info">
+                <span id="cardNumber">#-</span>
+                <span id="cardStatus">-</span>
+            </div>
+            <div class="card-word" id="cardWord">
+                <div style="font-size: 24px; margin-bottom: 20px;">📁</div>
+                <div style="font-size: 18px;" id="loadFileMessage">파일을 불러주세요</div>
+                <button class="action-btn" id="fileSelectBtn" onclick="event.stopPropagation(); document.getElementById('fileInput').click()" style="margin-top: 20px; width: auto; padding: 12px 32px;">
+                    파일 선택
+                </button>
+            </div>
+            <div class="card-meaning" id="cardMeaning"></div>
+            <div class="quiz-options" id="quizOpt" style="display: none;"></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📱 학습창 풀스크린 플로팅 버튼 -->
+    <button class="study-fullscreen-btn" id="floatingFullscreenBtn" onclick="toggleStudyFullscreen()" title="학습창 풀스크린">
+        ⛶
+    </button>
+
+    <!-- 🔁 쉐도잉 현재 세트 반복(AB) 플로팅 버튼 (설정창 없이 토글) -->
+    <button class="shadow-loop-btn" id="shadowLoopFloatingBtn" onclick="toggleShadowLoopFloating()" title="쉐도잉 현재 세트 반복" style="display:none;" aria-pressed="false">
+        🔁
+    </button>
+
+    <!-- 하단 네비게이션 -->
+    <div class="bottom-nav">
+        <button class="nav-btn" onclick="prevWord()">◀</button>
+        <button class="nav-btn" onclick="toggleMem()">⭐</button>
+        <button class="nav-btn" onclick="togglePlayPause()" id="playPauseBtn">▶</button>
+        <button class="nav-btn" id="manualAnswerBtn" onclick="showManualAnswer()" style="display: none; background: var(--accent-color); color: white;">👁️</button>
+        <button class="nav-btn" onclick="toggleStar()">★</button>
+        <button class="nav-btn" onclick="nextWord()">▶</button>
+    </div>
+
+    <!-- 범위 선택 팝업 -->
+    <div class="popup-overlay" id="rangePopup" onclick="if(event.target === this) closePopup('rangePopup')">
+        <div class="popup">
+            <div class="popup-header">
+                <div class="popup-title" id="titleRange">📍 단어 범위</div>
+                <button class="popup-close" onclick="closePopup('rangePopup')">×</button>
+            </div>
+            <div class="setting-group">
+                <div class="range-input">
+                    <input type="number" id="startIdx" value="1" placeholder="시작">
+                    <span>~</span>
+                    <input type="number" id="endIdx" value="300" placeholder="끝">
+                </div>
+                <div class="btn-grid">
+                    <button class="option-btn" onclick="setRange(1,100,this)">1-100</button>
+                    <button class="option-btn" onclick="setRange(101,200,this)">101-200</button>
+                    <button class="option-btn" onclick="setRange(201,300,this)">201-300</button>
+                    <button class="option-btn" onclick="setRange(301,400,this)">301-400</button>
+                    <button class="option-btn" onclick="setRange(401,500,this)">401-500</button>
+                    <button class="option-btn" id="btnAll" onclick="setRangeAll(this)">전체</button>
+                </div>
+            </div>
+            <button class="action-btn" id="btnApply1" onclick="applyRange()">적용</button>
+        </div>
+    </div>
+
+    <!-- 속도 선택 팝업 -->
+    <div class="popup-overlay" id="speedPopup" onclick="if(event.target === this) closePopup('speedPopup')">
+        <div class="popup">
+            <div class="popup-header">
+                <div class="popup-title" id="titleSpeed">⚡ 깜박이 속도</div>
+                <button class="popup-close" onclick="closePopup('speedPopup')">×</button>
+            </div>
+            <div class="setting-group">
+                <div class="btn-grid">
+                    <button class="option-btn" id="speedFast" onclick="setSpeed(1.0)"><span id="textFast">빠름</span><br>1<span id="secText1">초</span></button>
+                    <button class="option-btn active" id="speedNormal" onclick="setSpeed(2.0)"><span id="textNormal">보통</span><br>2<span id="secText2">초</span></button>
+                    <button class="option-btn" id="speedSlow" onclick="setSpeed(3.0)"><span id="textSlow">느림</span><br>3<span id="secText3">초</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 크기 선택 팝업 -->
+    <div class="popup-overlay" id="sizePopup" onclick="if(event.target === this) closePopup('sizePopup')">
+        <div class="popup">
+            <div class="popup-header">
+                <div class="popup-title" id="titleSize">🔤 글자 크기</div>
+                <button class="popup-close" onclick="closePopup('sizePopup')">×</button>
+            </div>
+            <div class="slider-container">
+                <input type="range" class="slider" id="fontSizeSlider" min="24" max="72" value="48" oninput="updateFontSize(this.value)">
+                <div class="slider-value" id="fontSizeValue">48px</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 퀴즈 설정 팝업 -->
+    <div class="popup-overlay" id="quizSettingsPopup" onclick="if(event.target === this) closePopup('quizSettingsPopup')">
+        <div class="popup">
+            <div class="popup-header">
+                <div class="popup-title" id="titleQuizSettings">⚙️ 퀴즈 설정</div>
+                <button class="popup-close" onclick="closePopup('quizSettingsPopup')">×</button>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelQuizDirection">퀴즈 방향</label>
+                <div class="btn-grid">
+                    <button class="option-btn active" id="dirEngToKor" onclick="setQuizDirection('wordToMeaning')"><span id="textEngToKor">앞→뒤</span></button>
+                    <button class="option-btn" id="dirKorToEng" onclick="setQuizDirection('meaningToWord')"><span id="textKorToEng">뒤→앞</span></button>
+                    <button class="option-btn" id="dirMixed" onclick="setQuizDirection('mixed')"><span id="textMixed">혼합</span></button>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelWrongDelay">오답 지연 시간</label>
+                <div class="btn-grid">
+                    <button class="option-btn" id="delayFast" onclick="setQuizDelay(0.5)"><span id="delayFastText">빠름</span><br>0.5<span id="secDelayText1">초</span></button>
+                    <button class="option-btn active" id="delayNormal" onclick="setQuizDelay(1.0)"><span id="delayNormalText">보통</span><br>1<span id="secDelayText2">초</span></button>
+                    <button class="option-btn" id="delaySlow" onclick="setQuizDelay(1.5)"><span id="delaySlowText">느림</span><br>1.5<span id="secDelayText3">초</span></button>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelStarReview">🔄 별표 복습</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item" onclick="toggleQuizSetting('wrongRevive')">
+                        <div class="checkbox" id="quizWrongRevive"></div>
+                        <span id="textWrongRevive">별표 복습 포함</span>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; display: flex; align-items: center; gap: 8px;">
+                    <label style="font-size: 14px;" id="labelWrongDaysBasis">기준:</label>
+                    <input type="number" id="wrongDaysInput" value="7" min="1" max="365" 
+                           style="width: 60px; padding: 8px; border: 1px solid var(--border-color-2); 
+                                  border-radius: 6px; background: var(--bg-tertiary); color: var(--text-primary);"
+                           onchange="setWrongDaysFromInput()">
+                    <label style="font-size: 14px;" id="labelWrongDaysUnit">일 전</label>
+                </div>
+                <div class="btn-grid" style="margin-top: 8px;">
+                    <button class="option-btn" id="wrongDays3" onclick="setWrongDays(3)"><span id="wrongDays3Text">3일</span></button>
+                    <button class="option-btn active" id="wrongDays7" onclick="setWrongDays(7)"><span id="wrongDays7Text">7일</span></button>
+                    <button class="option-btn" id="wrongDays14" onclick="setWrongDays(14)"><span id="wrongDays14Text">14일</span></button>
+                    <button class="option-btn" id="wrongDays30" onclick="setWrongDays(30)"><span id="wrongDays30Text">30일</span></button>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelOtherOptionsQuiz">기타 옵션</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item" onclick="toggleQuizSetting('hint')">
+                        <div class="checkbox checked" id="quizHint"></div>
+                        <span id="textQuizHint">정답 표시</span>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleQuizSetting('shuffle')">
+                        <div class="checkbox checked" id="quizShuffle"></div>
+                        <span id="textQuizShuffle">섞기</span>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelTestPrint">📝 테스트지 출력</label>
+                <div class="btn-grid">
+                    <button class="option-btn" id="btnTestQuestion" onclick="generateTestPDF('test')" style="background:#3498db;color:white;">📄 문제지</button>
+                    <button class="option-btn" id="btnTestAnswer" onclick="generateTestPDF('answer')" style="background:#2ecc71;color:white;">✅ 정답지</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 필터 팝업 -->
+    <div class="popup-overlay" id="filterPopup" onclick="if(event.target === this) closePopup('filterPopup')">
+        <div class="popup">
+            <div class="popup-header">
+                <div class="popup-title" id="titleFilter">🔍 필터</div>
+                <button class="popup-close" onclick="closePopup('filterPopup')">×</button>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelWordFilter">📋 단어 필터</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item" onclick="toggleFilter('unmem')">
+                        <div class="checkbox" id="filterUnmem"></div>
+                        <span id="textUntested">미테스트</span>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleFilter('star')">
+                        <div class="checkbox" id="filterStar"></div>
+                        <span id="textStarOnly">별표만</span>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleFilter('safe')">
+                        <div class="checkbox" id="filterSafe"></div>
+                        <span id="textSafeOnly">안정권만</span>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelColorHighlight">🎨 컬러 강조</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item" onclick="toggleFilter('colorLearning')">
+                        <div class="checkbox" id="filterColorLearning"></div>
+                        <span style="color: var(--color-learning);" id="textLearningWords">학습중 단어</span>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleFilter('colorWrong')">
+                        <div class="checkbox" id="filterColorWrong"></div>
+                        <span style="color: var(--color-wrong);" id="textStarWords">별표 단어</span>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleFilter('colorSafe')">
+                        <div class="checkbox" id="filterColorSafe"></div>
+                        <span style="color: var(--color-safe);" id="textSafeWords">안정권 단어</span>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelOtherOptionsFilter">⚙️ 기타 옵션</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item" onclick="toggleFilter('autoSpeak')">
+                        <div class="checkbox checked" id="filterAutoSpeak"></div>
+                        <span id="textAutoSpeak">자동 발음</span>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleFilter('shuffle')">
+                        <div class="checkbox checked" id="filterShuffle"></div>
+                        <span id="textFilterShuffle">섞기</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SRS 설정 팝업 -->
+    <div class="popup-overlay" id="srsSettingsPopup" onclick="if(event.target === this) closePopup('srsSettingsPopup')">
+        <div class="popup">
+            <div class="popup-header">
+                <div class="popup-title" id="titleSRS">🔄 SRS 설정</div>
+                <button class="popup-close" onclick="closePopup('srsSettingsPopup')">×</button>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelReviewTarget">복습 대상</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item" onclick="toggleSRSFilter('srsNewOnly')">
+                        <div class="checkbox checked" id="srsNewOnly"></div>
+                        <span id="textSrsNewOnly">새 단어 포함</span>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleSRSFilter('srsHardOnly')">
+                        <div class="checkbox" id="srsHardOnly"></div>
+                        <span id="textSrsHardOnly">어려운 단어 우선</span>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelIntervalMultiplier">간격 배율</label>
+                <div class="btn-grid">
+                    <button class="option-btn" id="easeFast" onclick="setEaseMode(2.0)"><span id="easeFastText">빠름</span><br>×2.0</button>
+                    <button class="option-btn active" id="easeNormal" onclick="setEaseMode(2.5)"><span id="easeNormalText">표준</span><br>×2.5</button>
+                    <button class="option-btn" id="easeSlow" onclick="setEaseMode(3.0)"><span id="easeSlowText">느림</span><br>×3.0</button>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelFailureReduction">실패 시 감소</label>
+                <div class="btn-grid">
+                    <button class="option-btn active" id="lapseReset" onclick="setLapseMode(0.0)"><span id="lapseResetText">리셋</span><br><span id="lapseResetSub">(1일로)</span></button>
+                    <button class="option-btn" id="lapse20" onclick="setLapseMode(0.2)">20%<br><span id="lapse20Text">유지</span></button>
+                    <button class="option-btn" id="lapse50" onclick="setLapseMode(0.5)">50%<br><span id="lapse50Text">유지</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 회화 설정 팝업 -->
+    <div class="popup-overlay" id="dialogSettingsPopup" onclick="if(event.target === this) closePopup('dialogSettingsPopup')">
+        <div class="popup">
+            <div class="popup-header">
+                <div class="popup-title" id="titleDialog">💬 회화 설정</div>
+                <button class="popup-close" onclick="closePopup('dialogSettingsPopup')">×</button>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelRoleSettings">역할 설정</label>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 14px; color: var(--color-dialog-a);" id="labelRoleA">A 역할 (컴퓨터)</label>
+                        <select id="dialogRoleA" style="width: 100%; padding: 10px; margin-top: 4px; border: 1px solid var(--border-color-2); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary);">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 14px; color: var(--color-dialog-b);" id="labelRoleB">B 역할 (나)</label>
+                        <select id="dialogRoleB" style="width: 100%; padding: 10px; margin-top: 4px; border: 1px solid var(--border-color-2); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary);">
+                            <option value="B">B</option>
+                            <option value="A">A</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelWaitTime">대기 시간 설정</label>
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 14px;" id="labelCompWait">컴퓨터 대기 (초)</label>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                        <input type="number" id="dialogCompSpeed" value="3.0" step="0.5" min="0" max="10" style="flex: 1; padding: 10px; border: 1px solid var(--border-color-2); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary);">
+                        <span style="font-size: 12px; color: var(--text-secondary);">(0 = 수동)</span>
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size: 14px;" id="labelUserWait">사용자 대기 (초)</label>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                        <input type="number" id="dialogUserSpeed" value="3.0" step="0.5" min="0" max="10" style="flex: 1; padding: 10px; border: 1px solid var(--border-color-2); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary);">
+                        <span style="font-size: 12px; color: var(--text-secondary);">(0 = 수동)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 🎧 쉐도잉 모드 설정 -->
+            <div class="setting-group" style="background: var(--bg-tertiary); padding: 16px; border-radius: 12px; margin-top: 16px;">
+                <label class="setting-label" id="labelShadowingMode">🎧 쉐도잉 모드</label>
+                
+                <div style="margin-bottom: 12px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                        <input type="checkbox" id="shadowingMode" style="width: 20px; height: 20px;">
+                        <span id="textShadowingActivate">쉐도잉 활성화 (AB 모두 컴퓨터가 읽음)</span>
+                    </label>
+                </div>
+                
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 14px;" id="labelShadowMyTime">내 따라읽기 시간 (초)</label>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                        <input type="number" id="shadowMyTime" value="3.0" step="0.5" min="0" max="10" style="flex: 1; padding: 10px; border: 1px solid var(--border-color-2); border-radius: 8px; background: var(--bg-secondary); color: var(--text-primary);">
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 14px; font-weight: bold;" id="labelShadowABLoop">🔁 A-B 반복횟수</label>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+                            <input type="checkbox" id="shadowLoop" style="width: 20px; height: 20px;">
+                            <span id="textShadowLoopUse">반복 사용</span>
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <input type="number" id="shadowLoopCount" value="2" step="1" min="0" style="width: 70px; padding: 8px; border: 1px solid var(--border-color-2); border-radius: 8px; background: var(--bg-secondary); color: var(--text-primary);">
+                            <span style="font-size: 12px; color: var(--text-secondary);" id="textShadowLoopUnit">회 (0=무한)</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;" id="textShadowLoopDesc">체크 OFF=반복없음 / 0=무한 / 숫자=해당 횟수만큼 반복 후 다음 세트</div>
+                </div>
+                
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 14px;" id="labelShadowRate">읽기 속도</label>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                        <input type="number" id="shadowRate" value="1.0" step="0.05" min="0.5" max="2.0" style="flex: 1; padding: 10px; border: 1px solid var(--border-color-2); border-radius: 8px; background: var(--bg-secondary); color: var(--text-primary);" oninput="document.getElementById('shadowRateA').value=this.value; document.getElementById('shadowRateB').value=this.value;">
+                    </div>
+                    <!-- 하위호환 숨김 -->
+                    <input type="hidden" id="shadowRateA" value="1.0">
+                    <input type="hidden" id="shadowRateB" value="1.0">
+                </div>
+                
+                <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.6; padding: 12px; background: var(--bg-secondary); border-radius: 8px; border-left: 3px solid var(--accent-color);" id="textShadowingTip">
+                    💡 쉐도잉 ON이면 A와 B를 모두 컴퓨터가 읽습니다.<br>
+                    화면 표시(AB 동시/순차)는 기존 설정을 사용합니다.
+                </div>
+                
+                <button id="shadowFinishBtn" class="action-btn" style="background: #2c3e50; display: none; margin-top: 12px;" onclick="finishShadowing()">
+                    마무리
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TTS 설정 팝업 -->
+    <div class="popup-overlay" id="ttsSettingsPopup" onclick="if(event.target === this) closePopup('ttsSettingsPopup')">
+        <div class="popup">
+            <div class="popup-header">
+                <div class="popup-title" id="titleTTS">🎤 음성 설정</div>
+                <button class="popup-close" onclick="closePopup('ttsSettingsPopup')">×</button>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" for="studyLangSelect">학습 언어</label>
+                <select id="studyLangSelect" onchange="changeStudyLanguage(this.value)" style="width: 100%; padding: 10px; border: 1px solid var(--border-color-2); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary);">
+                    <option value="en">🇺🇸 English</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                    <option value="it">🇮🇹 Italiano</option>
+                    <option value="pt">🇵🇹 Português</option>
+                    <option value="ru">🇷🇺 Русский</option>
+                    <option value="zh">🇨🇳 中文</option>
+                    <option value="ja">🇯🇵 日本語</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                    <option value="hi">🇮🇳 हिन्दी</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelVoice">음성 선택</label>
+                <select id="voiceSelect" style="width: 100%; padding: 10px; border: 1px solid var(--border-color-2); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary);"></select>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelTTSSpeed">속도</label>
+                <input type="range" id="ttsRate" min="0.5" max="2.0" step="0.1" value="1.0" class="slider" oninput="document.getElementById('ttsRateValue').textContent = this.value">
+                <div class="slider-value" id="ttsRateValue">1.0</div>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelTTSPitch">피치</label>
+                <input type="range" id="ttsPitch" min="0.5" max="2.0" step="0.1" value="1.0" class="slider" oninput="document.getElementById('ttsPitchValue').textContent = this.value">
+                <div class="slider-value" id="ttsPitchValue">1.0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 독해/영작 설정 팝업 -->
+    <div class="popup-overlay" id="readingPopup" onclick="if(event.target === this) closePopup('readingPopup')">
+        <div class="popup">
+            <div class="popup-header">
+                <div class="popup-title" id="titleReading">🎓 독해/영작 설정</div>
+                <button class="popup-close" onclick="closePopup('readingPopup')">×</button>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" id="labelStudyMode">학습 모드</label>
+                <select id="readingMode" onchange="updateReadingMode()" data-i18n="readingMode" style="width: 100%; padding: 10px; border: 1px solid var(--border-color-2); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary); margin-bottom: 12px;">
+                    <option value="off" id="readingOff">꺼짐</option>
+                    <option value="eng-kor" id="readingEngKor">독해모드 (앞→뒤)</option>
+                    <option value="kor-eng" id="readingKorEng">영작모드 (뒤→앞)</option>
+                </select>
+            </div>
+            <div class="setting-group" id="thinkTimeContainer" style="display: none;">
+                <label class="setting-label" id="labelThinkTime">생각 시간 (초)</label>
+                <select id="thinkTime" style="width: 100%; padding: 10px; border: 1px solid var(--border-color-2); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary); margin-bottom: 12px;">
+                    <option value="3">3초</option>
+                    <option value="5">5초</option>
+                    <option value="7" selected>7초</option>
+                    <option value="10">10초</option>
+                </select>
+                
+                <label class="setting-label" id="labelAnswerTime">답 보는 시간 (초)</label>
+                <select id="answerTime" style="width: 100%; padding: 10px; border: 1px solid var(--border-color-2); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary);">
+                    <option value="2">2초</option>
+                    <option value="3" selected>3초</option>
+                    <option value="5">5초</option>
+                    <option value="7">7초</option>
+                    <option value="10">10초</option>
+                </select>
+            </div>
+            <div class="setting-group" style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px;">
+                <p id="readingDescription" style="font-size: 13px; color: var(--text-secondary); margin: 0;">
+                    💡 <strong>사용 방법:</strong><br>
+                    1. 단어 파일 로드 (번호 매칭 파일)<br>
+                    2. 모드 선택 (독해/영작)<br>
+                    3. 생각 시간 &amp; 답보는 시간 설정<br>
+                    4. 시작 버튼 클릭
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 메뉴 팝업 -->
+    <div class="popup-overlay" id="menuPopup" onclick="if(event.target === this) closePopup('menuPopup')">
+        <div class="popup">
+            <div class="popup-header">
+                <div class="popup-title">⚙️ 메뉴</div>
+                <button class="popup-close" onclick="closePopup('menuPopup')">×</button>
+            </div>
+            <div class="setting-group">
+                <button class="action-btn" id="btnFileLoad" onclick="document.getElementById('fileInput').click()" style="font-size: 16px;">📂 파일 불러오기 (자동감지)</button>
+                <input type="file" id="fileInput" style="display:none" accept=".txt">
+                <button class="action-btn" id="btnPdfLoad" style="background:#e67e22; font-size:16px;" onclick="window.PDFLoader&&PDFLoader.triggerPdfInput()">📄 PDF 로드</button>
+                
+                <button class="action-btn" id="btnDataSave" style="background: #8e44ad;" onclick="exportData()">💾 데이터 저장</button>
+                <button class="action-btn" id="btnDataLoad" style="background: #2980b9;" onclick="document.getElementById('importInput').click()">📥 데이터 불러오기</button>
+                <input type="file" id="importInput" style="display:none" accept=".json" onchange="importData(this)">
+                <button class="action-btn" id="btnQuizReport" style="background: #e67e22;" onclick="showReportModal()">📋 퀴즈 리포트</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 통계 모달 -->
+    <div class="modal" id="statsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📊 학습 통계</div>
+                <button class="popup-close" onclick="closeModal('statsModal')">×</button>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="statToday">0</div>
+                    <div class="stat-label">오늘 공부</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statWeek">0</div>
+                    <div class="stat-label">이번 주</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statMemRate">0%</div>
+                    <div class="stat-label">안정권 비율</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statQuizRate">0%</div>
+                    <div class="stat-label">퀴즈 정답률</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 리포트 모달 -->
+    <div class="modal" id="reportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📋 퀴즈 리포트</div>
+                <button class="popup-close" onclick="closeModal('reportModal')">×</button>
+            </div>
+            <div id="reportContent"></div>
+        </div>
+    </div>
+
+
+    <!-- 📱 풀스크린 퀵 모드바 (롱프레스 시 표시) -->
+    <div id="fsModeBar" class="fs-modebar hidden" aria-hidden="true">
+        <button class="fs-modebtn" data-mode="study" onclick="selectMode('study', event, this)">단어</button>
+        <button class="fs-modebtn" data-mode="quiz" onclick="selectMode('quiz', event, this)">퀴즈</button>
+        <button class="fs-modebtn" data-mode="dialog" onclick="selectMode('dialog', event, this)">회화</button>
+        <button class="fs-modebtn" data-mode="srs" onclick="selectMode('srs', event, this)">SRS</button>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/app_state.js"></script>
+    <script src="js/i18n_data.js"></script>
+<script src="js/i18n_tts.js"></script>
+    <script src="js/compat_shim.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/tts_voices.js"></script>
+<script src="js/ui_render.js"></script>
+<script src="js/ui_handlers.js"></script>
+<script src="js/wake_lock.js"></script>
+<script src="js/ui_bindings.js"></script>
+<!-- ✨ Phase 2: Data Layer 통합 (4개 → 1개) -->
+<script src="js/data_unified.js"></script>
+<script src="js/srs.js"></script>
+<script src="js/render_stats.js"></script>
+<script src="js/tts_playback.js"></script>
+<script src="js/reading_playback.js"></script>
+<script src="js/dialog_state.js"></script>
+<script src="js/dialog_flow.js"></script>
+<script src="js/dialog_controls.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/fullscreen_modebar.js"></script>
+<script src="js/fullscreen_gestures.js"></script>
+<script src="js/fullscreen_toggle.js"></script>
+<script src="js/engine_mode.js"></script>
+    <script src="js/shadow_loop_fab.js"></script>
+    <script src="js/engine_restart_quiz.js"></script>
+    <script src="js/engine_run.js"></script>
+    <script src="js/engine_nav.js"></script>
+    <script src="js/engine_flags.js"></script>
+
+<!-- ===== PC test-harness compatibility (hidden; no UI impact) ===== -->
+<div id="__compatShim" style="display:none">
+  <!-- Required openers -->
+  <button id="langBtn" type="button" onclick="(function(){var b=document.body;var cur=(b.getAttribute('data-ui-lang')||'ko');var next=(cur==='ko'?'en':'ko');b.setAttribute('data-ui-lang',next);})()"></button>
+  <button id="showBasicSettings" type="button" onclick="window.showMenu && showMenu();"></button>
+  <button id="showStudySettings" type="button" onclick="window.showMenu && showMenu();"></button>
+  <button id="showReadingSettings" type="button" onclick="window.showMenu && showMenu();"></button>
+  <button id="showSrsSettings" type="button" onclick="window.showMenu && showMenu();"></button>
+  <button id="showShadowSettings" type="button" onclick="window.showMenu && showMenu();"></button>
+  <button id="showQuizSettings" type="button" onclick="window.showMenu && showMenu();"></button>
+  <button id="showDialogSettings" type="button" onclick="window.showMenu && showMenu();"></button>
+
+  <!-- Required containers -->
+  <div id="basicOpt"></div>
+  <div id="studyOpt"></div>
+  <div id="readingOpt"></div>
+  <div id="srsOpt"></div>
+  <div id="dialogOpt"></div>
+  <div id="shadowOpt"></div>
+  <div id="subDisplay"></div>
+  <div id="quizArea"></div>
+
+  <!-- Required controls -->
+  <button id="startBtn" type="button" onclick="window.startApp && startApp();"></button>
+  <button id="stopBtn" type="button" onclick="window.stopApp && stopApp();"></button>
+  <!-- mainDisplay is expected by some harnesses -->
+  <div id="mainDisplay"></div>
+</div>
+
+<script src="js/testpdf_split.js"></script>
+<script src="js/pdf_loader.js"></script>
+
+<!-- ✅ IndexedDB 프리로드 완료 후 초기화 확인 -->
+<script>
+(function() {
+  function _reapplySettings() {
+    try {
+      // 다크모드 재적용
+      if (window.Storage && Storage.get('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+        var btn = document.getElementById('themeBtn');
+        if (btn) btn.textContent = '☀️';
+      }
+      // UI 언어 재적용
+      if (window.Storage) {
+        var uiLang = Storage.get('uiLang');
+        if (uiLang && typeof applyUILanguage === 'function') applyUILanguage();
+        var studyLang = Storage.get('studyLang');
+        if (studyLang && window.STUDY_LANG_CONFIG && window.STUDY_LANG_CONFIG[studyLang]) {
+          window.currentStudyLang = studyLang;
+          var sel = document.getElementById('studyLangSelect');
+          if (sel) sel.value = studyLang;
+        }
+      }
+    } catch(e) {}
+  }
+
+  if (window.Storage && window.Storage.ready && typeof window.Storage.ready.then === 'function') {
+    window.Storage.ready.then(function() {
+      _reapplySettings();
+    }).catch(function() {});
+  }
+})();
+</script>
+</body>
+</html>
