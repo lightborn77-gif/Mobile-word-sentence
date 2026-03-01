@@ -1,4 +1,371 @@
-# 📚 Vocabulary PRO++
+# 📚 Vocabulary PRO++# 📱 Vocabulary PRO++ Mobile
+
+**모바일 특화 어휘·회화 학습 앱 · Mobile-first vocabulary & conversation study app**
+
+[![Mobile Version](https://img.shields.io/badge/📱%20Mobile%20Version-Launch-6C63FF?style=for-the-badge)](https://lightborn77-gif.github.io/Mobile-word-sentence/)
+[![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-green?style=for-the-badge)](LICENSE)
+
+> 서버 없이 브라우저만으로 동작하는 완전 오프라인 단어 학습 도구  
+> A fully offline vocabulary learning tool — runs entirely in the browser, no server needed.
+
+---
+
+## 📸 스크린샷 · Screenshots
+
+*(스크린샷을 여기에 추가하세요 · Add screenshots here)*
+
+---
+
+## 🌟 주요 특징 · Key Features
+
+- 📱 **모바일 최적화 UI** — 스와이프 제스처, 터치 친화적 레이아웃
+- 🌐 **11개 학습 언어 + UI 한/영 전환** 지원
+- 💾 **IndexedDB 기반 영구 저장** — 앱 종료 후에도 학습 데이터 유지
+- 🔒 **화면 꺼짐 방지 (Wake Lock)** — 자동 재생 중 화면이 꺼지지 않음
+- 📄 **PDF 단어장 자동 파싱** — 표 구조 PDF를 자동으로 단어장으로 변환
+- 🎓 **독해/영작 모드** — 단어↔뜻 방향 반전 학습
+- 🔄 **SRS 망각곡선 알고리즘** — 과학적 간격반복 복습
+
+---
+
+## 🌐 지원 언어 · Supported Study Languages
+
+| | 언어 / Language | TTS 코드 |
+|---|---|---|
+| 🇺🇸 | English | en-US |
+| 🇯🇵 | 日本語 | ja-JP |
+| 🇨🇳 | 中文 | zh-CN |
+| 🇪🇸 | Español | es-ES |
+| 🇩🇪 | Deutsch | de-DE |
+| 🇫🇷 | Français | fr-FR |
+| 🇮🇹 | Italiano | it-IT |
+| 🇵🇹 | Português | pt-PT |
+| 🇷🇺 | Русский | ru-RU |
+| 🇸🇦 | العربية | ar-SA |
+| 🇮🇳 | हिन्दी | hi-IN |
+
+> UI 자체도 **한국어 ↔ 영어** 전환 가능 · UI language toggles between **Korean ↔ English**
+
+---
+
+## 🚀 실행 방법 · How to Run
+
+```
+index.html을 스마트폰 브라우저(Chrome / Safari)로 열거나,
+아래 링크에서 바로 실행하세요.
+
+Open index.html in a smartphone browser (Chrome / Safari),
+or launch directly from the link below.
+```
+
+▶ **[https://lightborn77-gif.github.io/Mobile-word-sentence/](https://lightborn77-gif.github.io/Mobile-word-sentence/)**
+
+1. **파일 선택** 버튼으로 단어장 TXT 또는 PDF 업로드  
+   Tap **Select File** to upload a vocabulary TXT or PDF
+2. 상단 탭에서 학습 모드 선택  
+   Select a study mode from the top tabs
+3. ▶ 버튼으로 시작  
+   Tap ▶ to start
+
+---
+
+## 🎯 학습 모드 상세 · Study Modes
+
+### 1. 📖 깜박이 모드 · Flicker / Study Mode
+
+단어를 자동으로 순서대로 넘기며 학습하는 기본 모드입니다.  
+The core mode that automatically cycles through vocabulary cards.
+
+| 기능 | 설명 |
+|---|---|
+| 자동 TTS 발음 | 선택한 학습 언어로 단어를 자동 낭독 |
+| 속도 조절 | 빠름 / 보통 / 느림 (초 단위 설정) |
+| 글자 크기 | 32px ~ 72px 자유 조절 |
+| 독해/영작 모드 | 단어↔뜻 방향 반전, 생각 시간 설정 |
+| 필터 | 미테스트 / 별표 / 안정권 단어만 선택 |
+| 컬러 강조 | 학습중 / 별표 / 안정권 단어를 색상으로 구분 |
+| 처음부터 | 현재 풀을 처음 번호부터 재시작 |
+
+**제스처 (모바일) · Gestures (Mobile)**
+
+| 동작 | 결과 |
+|---|---|
+| 카드 탭 | 뜻 표시 / 다음 단어 |
+| 더블 탭 | 암기 완료(✓) 토글 |
+| 스와이프 → | 이전 단어 |
+| 스와이프 ← | 다음 단어 |
+| 롱프레스 (풀스크린) | 모드 전환 바 표시 |
+
+---
+
+### 2. ✍️ 퀴즈 모드 · Quiz Mode
+
+단어를 보고 뜻을 직접 입력하는 주관식 퀴즈입니다.  
+An open-answer quiz where you type the meaning from memory.
+
+| 기능 | 설명 |
+|---|---|
+| 문제 수 | 5 ~ 제한없음 (5 단위 조절) |
+| 퀴즈 방향 | 앞→뒤 / 뒤→앞 / 섞기 |
+| 힌트 | 첫 글자 힌트 표시 옵션 |
+| 셔플 | 랜덤 출제 |
+| 오답 지연 | 오답 후 정답 표시 시간 설정 |
+| 별표 복습 | 오답 누적 단어 우선 출제 |
+| 오답 부활 | 최근 N일 내 틀린 단어 자동 추가 |
+| 퀴즈 리포트 | 정답률, 오답 목록, 회차별 통계 |
+
+---
+
+### 3. 🔄 SRS 복습 모드 · SRS Review Mode
+
+**망각 곡선 기반 간격 반복 학습** — 과학적으로 설계된 복습 스케줄  
+**Spaced Repetition based on the forgetting curve** — scientifically optimized review schedule
+
+| 항목 | 내용 |
+|---|---|
+| 정답 시 | `interval = round(interval × easeFactor)` — 기본 2.5 |
+| 오답 시 | `interval = round(interval × lapseRate)` — 기본 0 → 1일 리셋 |
+| 안정권 조건 | 연속 정답 ≥ 5 AND 누적 정답 ≥ 10 |
+| 복습 대상 | `lastSeen + interval ≤ today` |
+| Hard Only | 별표 ≥ 3이고 안정권 아닌 단어만 |
+
+---
+
+### 4. 💬 회화 모드 · Dialog Mode
+
+A/B 역할 대화문으로 회화를 학습합니다.  
+Role-based A/B conversation study with TTS playback.
+
+| 기능 | 설명 |
+|---|---|
+| 자동/수동 진행 | 자동(속도 설정) 또는 수동(탭으로 넘김) |
+| 화자 전환 | A/B 역할 바꾸기 |
+| TTS 낭독 | 컴퓨터 역할 대사 자동 낭독 |
+| 쉐도잉 서브모드 | 따라 말하기 연습 (회화 모드 내 옵션) |
+
+---
+
+## 📁 파일 구조 · File Structure
+
+```
+ws_output/
+├── index.html                  # 앱 진입점 · App entry point
+├── css/
+│   └── styles.css              # 모바일 최적화 스타일 (821줄)
+│                               # Mobile-optimized styles (821 lines)
+└── js/
+    ├── app_state.js            # 전역 상태 관리 (State 패턴)
+    │                           # Global state management (State pattern)
+    ├── storage.js              # IndexedDB 저장소 (localStorage 호환 API)
+    │                           # IndexedDB storage (localStorage-compatible API)
+    ├── data_unified.js         # 데이터 파싱·검증·저장 통합 모듈
+    │                           # Unified data parsing, validation & storage
+    ├── engine.js               # 엔진 코어 (타이머·TTS·디스패처)
+    │                           # Engine core (timer, TTS, dispatcher)
+    ├── engine_mode.js          # 모드 전환 로직
+    │                           # Mode switching logic
+    ├── engine_run.js           # 재생·정지·다음·이전 흐름
+    │                           # Play/stop/next/prev flow
+    ├── engine_nav.js           # 네비게이션 (이전/다음 단어)
+    │                           # Navigation (prev/next word)
+    ├── engine_flags.js         # 별표·암기 플래그 처리
+    │                           # Star & memorize flag handling
+    ├── engine_restart_quiz.js  # 퀴즈 재시작 로직
+    │                           # Quiz restart logic
+    ├── quiz.js                 # 퀴즈 엔진 (출제·채점·리포트)
+    │                           # Quiz engine (generate, grade, report)
+    ├── srs.js                  # SRS 망각곡선 알고리즘
+    │                           # SRS spaced repetition algorithm
+    ├── dialog_flow.js          # 회화 진행 흐름
+    │                           # Dialog playback flow
+    ├── dialog_controls.js      # 회화 컨트롤 UI
+    │                           # Dialog control UI
+    ├── dialog_state.js         # 회화 상태 관리
+    │                           # Dialog state management
+    ├── tts_playback.js         # TTS 재생 (Web Speech API)
+    │                           # TTS playback (Web Speech API)
+    ├── tts_voices.js           # 음성 목록 로드·선택
+    │                           # Voice list loading & selection
+    ├── i18n_data.js            # 다국어 UI 텍스트·언어 설정
+    │                           # Multilingual UI text & language config
+    ├── i18n_tts.js             # TTS 언어 매핑
+    │                           # TTS language mapping
+    ├── pdf_loader.js           # PDF 좌표 클러스터링 파서
+    │                           # PDF coordinate-clustering parser
+    ├── render_stats.js         # 화면 렌더링·통계·리포트
+    │                           # Screen rendering, stats & report
+    ├── reading_playback.js     # 독해/영작 모드 재생
+    │                           # Reading/writing mode playback
+    ├── fullscreen_toggle.js    # 풀스크린 전환
+    │                           # Fullscreen toggle
+    ├── fullscreen_gestures.js  # 터치 제스처 (스와이프·더블탭·롱프레스)
+    │                           # Touch gestures (swipe, double-tap, long-press)
+    ├── fullscreen_modebar.js   # 풀스크린 모드바 UI
+    │                           # Fullscreen modebar UI
+    ├── shadow_loop_fab.js      # 쉐도잉 반복 플로팅 버튼
+    │                           # Shadowing loop floating action button
+    ├── theme.js                # 다크/라이트 테마
+    │                           # Dark/light theme
+    ├── wake_lock.js            # 화면 꺼짐 방지 (Wake Lock API)
+    │                           # Screen wake lock (Wake Lock API)
+    ├── ui_bindings.js          # UI 이벤트 바인딩
+    │                           # UI event bindings
+    ├── ui_handlers.js          # UI 이벤트 핸들러
+    │                           # UI event handlers
+    ├── ui_render.js            # UI 렌더링 유틸
+    │                           # UI rendering utilities
+    └── compat_shim.js          # 구버전 브라우저 호환 패치
+                                # Legacy browser compatibility shim
+```
+
+---
+
+## 🏗️ 아키텍처 · Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                     index.html (UI)                     │
+│   Header / Mode Tabs / Control Bar / Card / Popups     │
+└────────────────────┬────────────────────────────────────┘
+                     │
+         ┌───────────▼───────────┐
+         │      App.State        │  ← 전역 상태 단일 진실 공급원
+         │  (app_state.js)       │     Single source of truth
+         └───────┬───────────────┘
+                 │
+    ┌────────────▼─────────────────────────────────┐
+    │               Engine Layer                   │
+    │  engine.js / engine_mode.js / engine_run.js  │
+    │  → 타이머 관리 · TTS 디스패치 · 모드 전환     │
+    └──┬──────────┬──────────┬────────────┬────────┘
+       │          │          │            │
+  ┌────▼──┐  ┌───▼──┐  ┌───▼──┐  ┌─────▼──┐
+  │quiz.js│  │srs.js│  │dialog│  │reading │
+  │퀴즈   │  │SRS   │  │회화  │  │독해/영작│
+  └───────┘  └──────┘  └──────┘  └────────┘
+       │
+  ┌────▼──────────────────────────────────────┐
+  │            Data Layer                     │
+  │  data_unified.js → 파싱·검증·저장         │
+  │  storage.js → IndexedDB (localStorage API)│
+  │  pdf_loader.js → PDF 파싱                 │
+  └───────────────────────────────────────────┘
+```
+
+---
+
+## 💾 데이터 저장 · Data Storage
+
+서버 없이 **브라우저 IndexedDB**에 자동 저장됩니다. localStorage보다 용량이 크고 안정적입니다.  
+Auto-saved to **browser IndexedDB** — more stable and spacious than localStorage.
+
+```
+DB명 / DB Name: vocabMobileDB
+저장 키 / Key:  mem_{파일명 / filename}
+
+저장 필드 / Saved Fields:
+  n              번호 / Word number
+  m              암기 완료 여부 / Memorized flag
+  w              별표 횟수(오답 누적) / Wrong count (star count)
+  lastSeen       마지막 학습일 / Last studied date (YYYY-MM-DD)
+  interval       다음 복습까지 일수 / Days until next review
+  wrongDates     오답 발생 날짜 배열 / Wrong date history array
+  quizCount      퀴즈 출제 횟수 / Total quiz appearances
+  correctStreak  연속 정답 횟수 / Current correct streak
+  totalCorrect   누적 총 정답 횟수 / Total correct count
+  isSafe         안정권 여부 / Mastered (safe) flag
+```
+
+> 같은 파일명으로 재로드 시 이전 학습 데이터 자동 복원  
+> Reload same filename → previous progress auto-restored
+
+---
+
+## 📝 입력 파일 형식 · Input File Formats
+
+### 단어장 TXT · Vocabulary TXT
+
+**2줄 쌍 형식 (권장) · 2-line pair format (Recommended)**
+
+```
+1. apple
+1. 사과
+2. banana
+2. 바나나
+```
+
+**파싱 규칙 · Parsing Rules**
+- `^\d+` + 구분자(`. - 공백`) 이후 텍스트 추출
+- 알파벳 only → `word` 필드 / 한글·비알파벳 → `meaning` 필드
+- 괄호 `()` 내 텍스트, 이모지(✅🟢❌) 자동 제거
+- 같은 번호에 여러 뜻 → 쉼표 병합
+
+### 회화 TXT · Dialog TXT
+
+```
+A: How are you?
+잘 지내고 있어요?
+B: I'm doing great, thanks!
+정말 잘 지내고 있어요, 감사합니다!
+```
+
+- `A:` / `B:` 접두사 → 외국어 대사
+- 바로 다음 줄 → 번역 (없어도 됨)
+
+### PDF 형식 · PDF Format
+
+표(Table) 구조를 자동 파싱합니다. Y좌표 클러스터링으로 행을 감지하고, 페이지 중앙 기준으로 단어/뜻을 분리합니다.  
+Auto-parses table structure using Y-coordinate clustering to detect rows and split word/meaning by page midpoint.
+
+```
+| 번호 | 단어      | 뜻       |
+|  1  | apple     | 사과      |
+|  2  | beautiful | 아름다운   |
+```
+
+> ⚠️ 이미지 PDF(스캔본)는 지원하지 않습니다 · Scanned/image PDFs are not supported
+
+---
+
+## ⚙️ 시스템 요구사항 · Requirements
+
+| | |
+|---|---|
+| **브라우저 / Browser** | Chrome 90+, Edge 90+, Safari 15+, Firefox 88+ |
+| **TTS 권장 / TTS Recommended** | Edge — 11개 언어 다국어 TTS 지원 가장 안정적 |
+| **인터넷 / Internet** | PDF 로드 시 PDF.js CDN 최초 1회만 필요 |
+| **서버 / Server** | 불필요 · Not required — runs fully local |
+
+---
+
+## 📄 라이선스 · License
+
+[LICENSE](LICENSE) 참조 · See LICENSE file
+
+**이 소프트웨어는 CC BY-NC 4.0 라이선스로 배포됩니다.**  
+**This software is distributed under the CC BY-NC 4.0 license.**
+
+✅ 허용 / Allowed:
+- 개인 학습 목적 사용
+- 소스 코드 수정 및 개조
+- 학교·학원·스터디 그룹 등 비영리 교육 목적 배포
+- 출처 표기 후 재배포 (GitHub URL 또는 저작자 명시)
+- 포트폴리오·학습 프로젝트에 활용
+
+❌ 불허 / Not Allowed:
+- 유료 판매 또는 상업적 서비스에 포함하여 수익 창출
+- 저작권 고지 제거 후 자신의 저작물로 발표
+
+---
+
+## 🙏 피드백 · Feedback
+
+이슈 또는 PR로 의견을 남겨주세요.  
+더 많은 언어 학습자들에게 도움이 되도록 함께 발전시켜 나가고 싶습니다.
+
+Issues and PRs are welcome.  
+Let's make this useful for learners of every language together.
+
 
 <p align="center">
   <b>Memorized 2,000 words in 18 days — 40 min/day, no carryover.</b><br/>
