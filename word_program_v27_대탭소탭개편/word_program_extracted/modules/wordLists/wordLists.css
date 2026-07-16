@@ -1,0 +1,180 @@
+/* modules/wordLists/wordLists.css
+ * 저장된 리스트(wordLists) 패널 전용 스타일.
+ * index.html의 공통 변수(--accent, --border, --text-sub 등)를 재사용한다.
+ */
+
+.word-lists-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.word-lists-title {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.word-lists-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.word-lists-select-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-sub);
+  cursor: pointer;
+}
+
+#wordListsPanel .empty-state {
+  padding: 24px 0;
+  font-size: 13px;
+}
+
+.word-lists-ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.word-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.word-list-item.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.word-list-checkbox {
+  flex: 0 0 auto;
+}
+
+.word-list-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.word-list-name {
+  font-weight: 600;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.word-list-meta {
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+.word-list-item-actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 6px;
+}
+
+.word-list-load-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.word-list-edit-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.word-list-delete-btn {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+/* ============================================================
+   모바일 반응형 (세션 07)
+   - modules/conversationMode/conversationMode.css의 .cm-list-item
+     반응형 처리(세션 05)와 동일한 패턴을 따른다: 헤더는 세로로 쌓고,
+     목록 항목은 체크박스/정보/버튼을 wrap하여 각 부분이 충분한 터치
+     영역을 갖도록 한다.
+   ============================================================ */
+@media (max-width: 760px) {
+  .word-lists-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .word-lists-actions {
+    /* "+ 새 단어 추가" 버튼 + "전체 선택" 체크박스 + "선택 삭제" 버튼,
+       세 요소가 한 줄에 끼면 비좁아지므로 줄바꿈을 허용한다. */
+    flex-wrap: wrap;
+    justify-content: space-between;
+    row-gap: 8px;
+  }
+
+  .word-lists-actions .btn-primary {
+    /* "+ 새 단어 추가"는 가장 중요한 액션이므로 전체 너비로 눈에 띄게 배치. */
+    flex: 1 1 100%;
+    min-height: 44px;
+  }
+
+  .word-lists-select-all {
+    min-height: 44px;
+    padding: 4px 0;
+  }
+
+  .word-lists-select-all input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+
+  .word-lists-actions .btn-ghost {
+    min-height: 44px;
+    padding: 9px 14px;
+  }
+
+  .word-list-item {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .word-list-checkbox {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+  }
+
+  .word-list-info {
+    flex-basis: 100%;
+  }
+
+  .word-list-item-actions {
+    flex-basis: 100%;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .word-list-load-btn,
+  .word-list-edit-btn,
+  .word-list-delete-btn {
+    flex: 1;
+    min-height: 44px;
+  }
+}
