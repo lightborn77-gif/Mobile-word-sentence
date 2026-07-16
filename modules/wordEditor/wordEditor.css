@@ -1,0 +1,383 @@
+/* modules/wordEditor/wordEditor.css (단어 추가/편집 화면) */
+
+.we-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+}
+
+.we-top-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.we-top-header h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.we-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.we-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--accent-soft);
+  border-radius: 8px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.we-toolbar label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.we-count-input {
+  width: 70px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.we-sets-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.we-set-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: var(--card-bg);
+}
+
+.we-set-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.we-set-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--btn-ghost-hover);
+  color: var(--text-sub);
+}
+
+.we-set-badge.existing {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.we-set-badge.newbadge {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.we-delete-set-btn {
+  font-size: 12px;
+  padding: 5px 10px;
+}
+
+.we-row {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.we-row-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.we-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.we-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-sub);
+}
+
+.we-field input[type="text"] {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.we-deriv-section {
+  border-top: 1px dashed var(--border);
+  border-bottom: 1px dashed var(--border);
+  padding: 10px 0;
+  margin: 10px 0;
+}
+
+.we-deriv-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.we-deriv-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-sub);
+  margin-right: auto;
+}
+
+.we-deriv-count-input {
+  width: 56px;
+  padding: 5px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.we-add-deriv-btn {
+  font-size: 12px;
+  padding: 5px 10px;
+}
+
+.we-deriv-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.we-deriv-empty-hint {
+  font-size: 12px;
+  color: var(--empty-dash);
+  padding: 4px 2px;
+}
+
+.we-deriv-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 1fr 32px;
+  gap: 6px;
+  align-items: center;
+}
+
+.we-deriv-row select,
+.we-deriv-row input[type="text"] {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.we-delete-deriv-btn {
+  padding: 4px 6px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.we-save-panel {
+  border-top: 2px solid var(--border);
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.we-save-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.we-save-row label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.we-id-label {
+  font-size: 12px;
+  color: var(--text-sub);
+  font-weight: 500;
+}
+
+.we-id-input {
+  width: 90px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.we-checkbox-label,
+.we-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.we-target-row {
+  background: var(--bg);
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.we-list-name-input {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  min-width: 200px;
+}
+
+.we-save-button {
+  padding: 10px 22px;
+}
+
+.we-status-line {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.we-status-line.success {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.we-status-line.error {
+  color: var(--antonym);
+  font-weight: 600;
+}
+
+/* ============================================================
+   모바일 반응형 (세션 07)
+   - 이 파일은 원래 720px 기준의 미디어쿼리가 일부 있었으나, 프로젝트
+     전체 기준(app/main.css 및 다른 모듈들)이 760px이므로 여기에 맞춰
+     통일한다. 기존 720px 규칙의 내용(1열 전환, derivRow 열 폭 축소)은
+     그대로 유지하면서 브레이크포인트만 760px로 올리고, 터치 영역/
+     레이아웃을 다른 모듈과 같은 수준으로 보강한다.
+   ============================================================ */
+@media (max-width: 760px) {
+  .we-panel {
+    padding: 14px 14px;
+  }
+
+  .we-top-header {
+    /* 제목 + "목록으로 돌아가기" 버튼이 좁은 화면에서 겹치지 않도록
+       세로로 쌓는다(다른 모듈의 헤더 처리와 동일한 패턴). */
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .we-top-header .btn-ghost {
+    align-self: flex-start;
+    min-height: 40px;
+  }
+
+  .we-toolbar {
+    gap: 8px;
+  }
+
+  .we-count-input {
+    width: 64px;
+  }
+
+  .we-row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .we-deriv-header {
+    gap: 6px;
+  }
+
+  .we-deriv-count-input {
+    width: 48px;
+  }
+
+  .we-deriv-row {
+    /* 데스크톱은 100px 1fr 1fr 32px 4열 그리드이지만, 좁은 화면에서는
+       select와 삭제 버튼을 한 줄로 하고 입력 필드 2개는 아래로 쌓아
+       각 필드가 충분한 너비를 갖도록 한다. */
+    grid-template-columns: 1fr 32px;
+    grid-template-areas:
+      "select del"
+      "text text"
+      "meaning meaning";
+    row-gap: 6px;
+  }
+
+  .we-deriv-row select {
+    grid-area: select;
+  }
+
+  .we-deriv-row input[type="text"]:nth-of-type(1) {
+    grid-area: text;
+  }
+
+  .we-deriv-row input[type="text"]:nth-of-type(2) {
+    grid-area: meaning;
+  }
+
+  .we-delete-deriv-btn {
+    grid-area: del;
+    min-height: 40px;
+  }
+
+  .we-save-row {
+    gap: 8px;
+  }
+
+  .we-save-row.we-target-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .we-list-name-input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .we-id-input {
+    width: 74px;
+  }
+
+  .we-save-button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .we-delete-set-btn,
+  .we-add-deriv-btn {
+    min-height: 40px;
+  }
+}

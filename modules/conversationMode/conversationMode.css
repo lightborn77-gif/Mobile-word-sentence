@@ -1,0 +1,575 @@
+/* modules/conversationMode/conversationMode.css
+ * 회화 모드 전용 스타일. index.html의 공통 변수(--accent 등)를 재사용한다.
+ * sentenceMode.css/flashcard.css와 동일한 톤이지만 클래스 접두사는 .cm- 로
+ * 겹치지 않게 새로 정한다(독립 모듈 원칙 — 다른 모듈의 CSS 클래스를
+ * 공유하지 않는다).
+ */
+
+.cm-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+
+.cm-upload-title,
+.cm-lists-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.cm-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cm-label {
+  font-size: 13px;
+  color: var(--text-sub);
+  font-weight: 600;
+}
+
+.cm-btn {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.cm-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.cm-btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.cm-btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.cm-btn-secondary {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.cm-btn-secondary:hover:not(:disabled) {
+  background: var(--btn-secondary-hover);
+}
+
+.cm-btn-ghost {
+  background: transparent;
+  color: var(--text-sub);
+  border-color: var(--border);
+}
+
+.cm-btn-ghost:hover:not(:disabled) {
+  background: var(--btn-ghost-hover);
+}
+
+.cm-status-line {
+  font-size: 13px;
+  color: var(--text-sub);
+  margin-top: 10px;
+}
+
+.cm-status-line.cm-status-error {
+  color: var(--antonym);
+  font-weight: 600;
+}
+
+.cm-status-line.cm-status-success {
+  color: var(--success);
+  font-weight: 600;
+}
+
+/* 업로드 형식 안내. details/summary 네이티브 토글, 기본 접힘. */
+.format-guide {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.format-guide summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-sub);
+}
+
+.format-guide summary:hover {
+  color: var(--accent);
+}
+
+.format-guide-body {
+  margin-top: 10px;
+}
+
+.format-guide-desc,
+.format-guide-note {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.format-guide-example {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.format-guide-rules {
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+
+.format-guide-rules dt {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.format-guide-rules dd {
+  margin: 0 0 6px 0;
+  color: var(--text-sub);
+}
+
+/* ── 저장된 리스트 ─────────────────────────────────────────── */
+.cm-lists-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.cm-lists-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cm-select-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-sub);
+  cursor: pointer;
+  user-select: none;
+}
+
+.cm-empty-state {
+  text-align: center;
+  color: var(--text-sub);
+  padding: 32px 0;
+  font-size: 14px;
+}
+
+.cm-lists-ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cm-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.cm-list-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cm-list-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cm-list-meta {
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+.cm-list-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ── 역할 선택 / 화자별 시간 설정 ─────────────────────────── */
+.cm-role-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.cm-radio-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.cm-timing-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.cm-timing-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cm-timing-slider {
+  width: 140px;
+}
+
+.cm-timing-number {
+  width: 64px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+/* ── 카드 표시 영역 ────────────────────────────────────────── */
+.cm-stage {
+  min-height: 260px;
+}
+
+.cm-card-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.cm-card-progress {
+  font-size: 13px;
+  color: var(--text-sub);
+  font-variant-numeric: tabular-nums;
+}
+
+.cm-card {
+  width: 100%;
+  max-width: 900px;
+  min-height: 260px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--accent-soft);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.cm-speaker-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--text-sub);
+}
+
+.cm-speaker-badge.cm-speaker-partner {
+  background: var(--accent);
+}
+
+.cm-speaker-badge.cm-speaker-me {
+  background: var(--success);
+}
+
+.cm-card-line {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.cm-card-translation {
+  font-size: 18px;
+  color: var(--text-sub);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.cm-divider {
+  width: 60px;
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+.cm-nav-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cm-toggle-btn {
+  min-width: 96px;
+}
+
+.cm-toggle-btn.playing {
+  background: var(--antonym);
+}
+
+.cm-toggle-btn.playing:hover:not(:disabled) {
+  background: var(--antonym-hover);
+}
+
+.cm-hint {
+  margin: 14px 0 0;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+/* ============================================================
+   모바일 반응형 (세션 05)
+   - app/main.css의 공통 규칙(760px 브레이크포인트, 40px 최소 터치
+     타깃) 및 flashcard.css(세션 03)/sentenceMode.css(세션 04)와
+     동일한 기준을 그대로 따른다. 데스크톱(760px 초과) 레이아웃에는
+     영향을 주지 않는다.
+   ============================================================ */
+@media (max-width: 760px) {
+  .cm-panel {
+    padding: 14px 14px;
+    margin-bottom: 14px;
+  }
+
+  /* 업로드 행: 파일 선택 + 언어 드롭다운 + 저장 버튼을 세로로 쌓아
+     좁은 화면에서 겹치지 않게 한다(sentenceMode.css의
+     .sm-controls-row와 동일한 패턴). */
+  .cm-upload-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .cm-upload-row input[type="file"] {
+    width: 100%;
+  }
+
+  .cm-upload-row select,
+  .cm-upload-row .cm-btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .format-guide-example {
+    font-size: 12px;
+  }
+
+  /* ── 저장된 리스트 관리 화면 ────────────────────────────── */
+  .cm-lists-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cm-lists-actions {
+    justify-content: space-between;
+  }
+
+  /* "전체 선택" 체크박스와 "선택 삭제" 버튼의 터치 영역을 넉넉히
+     확보한다(최소 44px 터치 영역). */
+  .cm-select-all {
+    min-height: 44px;
+    padding: 4px 0;
+  }
+
+  .cm-select-all input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+
+  .cm-lists-actions .cm-btn-ghost {
+    min-height: 44px;
+    padding: 9px 14px;
+  }
+
+  /* 리스트 항목: 좁은 화면에서는 체크박스/정보/버튼이 한 줄에 끼면
+     터치가 어려워지므로 세로로 펼치고, 각 항목의 높이와 간격을
+     넉넉히 확보한다. */
+  .cm-list-item {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .cm-list-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+  }
+
+  .cm-list-info {
+    flex-basis: 100%;
+  }
+
+  .cm-list-item-actions {
+    flex-basis: 100%;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .cm-list-item-actions .cm-btn {
+    flex: 1;
+    min-height: 44px;
+  }
+
+  /* ── 역할 선택 / 화자별 시간 설정 ──────────────────────────
+     라디오 행과 A/B 타이밍 행을 세로로 쌓는다(sentenceMode.css의
+     .sm-direction-row/.sm-timing-row와 동일한 방식). */
+  .cm-role-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .cm-timing-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .cm-timing-group {
+    flex-wrap: wrap;
+  }
+
+  .cm-timing-slider {
+    width: 100%;
+    min-height: 40px;
+  }
+
+  .cm-timing-number {
+    min-height: 40px;
+    width: 72px;
+  }
+
+  /* 라디오 버튼 터치 영역 확장(세션 04와 동일한 방식). label 전체를
+     눌러도 선택되도록 이미 label로 감싸져 있으므로, 여기서는 CSS로
+     터치 영역과 여백만 넓힌다. */
+  .cm-radio-label {
+    min-height: 40px;
+    padding: 6px 4px;
+    width: 100%;
+  }
+
+  /* ── 카드 표시 영역 ─────────────────────────────────────── */
+  .cm-stage {
+    min-height: 0;
+  }
+
+  .cm-card {
+    max-width: 100%;
+    min-height: 200px;
+    padding: 28px 18px;
+    /* 카드가 화면 폭에 맞춰 확장되므로, 좌우로 살짝 여백을 두어
+       "스와이프 가능한 카드"라는 느낌을 준다(flashcard.css와 동일). */
+    margin: 0 4px;
+  }
+
+  /* 회화 대사는 문장 모드와 마찬가지로 길어질 수 있어 자연스러운
+     줄바꿈이 중요하다. clamp()로 화면 폭에 비례해 글자 크기를
+     조정하되, word-break/overflow-wrap도 함께 지정해 긴 문장이 카드
+     폭을 넘어 가로 스크롤을 만드는 것을 막는다. */
+  .cm-card-line {
+    font-size: clamp(17px, 5vw, 26px);
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .cm-card-translation {
+    font-size: clamp(14px, 4vw, 18px);
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .cm-card-progress {
+    font-size: 12px;
+  }
+
+  .cm-speaker-badge {
+    min-width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  /* 이전/다음/시작-정지 버튼을 터치하기 편한 크기와 간격으로 확대. */
+  .cm-nav-row {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .cm-nav-row .cm-btn {
+    flex: 1;
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .cm-toggle-btn {
+    min-width: 0;
+  }
+
+  /* 업로드 상태 문구가 좁은 화면에서 줄바꿈되어도 어색하지 않게
+     줄간격을 확보한다. */
+  .cm-status-line {
+    line-height: 1.5;
+    word-break: break-word;
+  }
+}
