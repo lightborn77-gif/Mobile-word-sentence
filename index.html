@@ -32241,7 +32241,7 @@ window.App.Pinyin.wordsZhGlue = "一过|不着|不过|不过如此|为了|为着
       const start = parseFloat(c[0]);
       const end = parseFloat(c[1]);
       if (c.length < 5 || !(start >= 0) || !(end > start)) { skipped++; continue; }
-      rows.push({ start, end, heard: c[2], text: c[3], ko: c[4] });
+      rows.push({ start, end, heard: c[2], text: c[3], ko: c[4], ruby: c[5] || '' });
     }
     const id = videoId(head.url);
     if (!id) return { ok: false, reason: 'url' };
@@ -32251,6 +32251,43 @@ window.App.Pinyin.wordsZhGlue = "一过|不着|不过|不过如此|为了|为着
       ok: true,
       doc: { id, url: head.url, title: head.title || id, audio: head.audio || '', study: head.study || '', model: head.model || '', rows, skipped }
     };
+  }
+
+  // 읽기 표기 `食[た]べる`를 [{ t, rt }] 조각으로 나눈다(rt는 읽기 없는 조각이면 빈 문자열).
+  // 읽기가 붙는 덩어리는 `[` 바로 앞의 가나·문장부호·공백이 아닌 글자 연속이다(오쿠리가나는 괄호 밖이라 자연히 빠진다).
+  // 표기가 깨져 있으면(닫는 괄호 없음 등) 앞뒤를 그대로 글자로 남겨 문장이 사라지지 않게 한다.
+  const RUBY_STOP = /[\s\][、。，,.!?！？：:；;「」『』“”"'（）()…·ぁ-ゟ゠-ヿ]/;
+  function rubySegments(ruby) {
+    const s = String(ruby || '');
+    const out = [];
+    let plain = '';
+    let i = 0;
+    while (i < s.length) {
+      const open = s.indexOf('[', i);
+      const close = open < 0 ? -1 : s.indexOf(']', open);
+      if (open < 0 || close < 0) { plain += s.slice(i); break; }
+      plain += s.slice(i, open);
+      let k = plain.length;
+      while (k > 0 && !RUBY_STOP.test(plain.charAt(k - 1))) k--;
+      const rt = s.slice(open + 1, close);
+      if (k < plain.length && rt) {
+        if (k > 0) out.push({ t: plain.slice(0, k), rt: '' });
+        out.push({ t: plain.slice(k), rt });
+      } else if (plain) {
+        out.push({ t: plain, rt: '' });
+      }
+      plain = '';
+      i = close + 1;
+    }
+    if (plain) out.push({ t: plain, rt: '' });
+    return out;
+  }
+
+  // 읽기를 뺀 글자가 공부 문장과 같을 때만 쓴다(문장을 고치고 읽기를 안 고친 문서에서 엉뚱한 글이 보이지 않게).
+  function rubyFor(row) {
+    if (!row || !row.ruby) return null;
+    const segs = rubySegments(row.ruby);
+    return segs.map((x) => x.t).join('') === row.text ? segs : null;
   }
 
   // 시각 t가 속한 문장 번호. 문장 사이 쉼에서는 바로 앞 문장을 가리킨다(강조가 깜박이지 않게). 첫 문장 앞이면 -1.
@@ -32288,7 +32325,7 @@ window.App.Pinyin.wordsZhGlue = "一过|不着|不过|不过如此|为了|为着
     return !!a && !!b && a !== b;
   }
 
-  App.VideoScript = { videoId, parse, indexAt, stepIndex, hint, isInterpret };
+  App.VideoScript = { videoId, parse, indexAt, stepIndex, hint, isInterpret, rubySegments, rubyFor };
 })();
 
 </script>
@@ -32303,6 +32340,7 @@ window.App.Pinyin.wordsZhGlue = "一过|不着|不过|不过如此|为了|为着
  * - 문서는 파일에서 다시 불러오면 되므로 앱 저장소에 넣지 않는다. 저장하는 것은 쉐도잉 설정과 영상별 기록(구간 다듬기·★·마지막 위치)뿐.
  * - 쉐도잉 엔진(_startSeg → 구간 재생 → 쉼 → 반복/다음)은 run 번호(_eng.run)로 옛 타이머를 무효화한다. 멈춤·다른 문장 선택은 번호만 올리면 된다.
  * - 통역 연습(소리 언어 ≠ 공부 문장 언어)의 읽기는 App.TTS.Core.speak 공식 입구만 쓴다. 언어는 문서의 #study 기준이라 앱의 학습 언어와 다를 수 있다.
+ * - 읽기(후리가나·병음)는 문서 6번째 칸이 있을 때 <ruby>를 DOM으로 만들어 그린다. 통역 연습 읽기(TTS)는 읽기 표기가 낭독되지 않게 항상 row.text만 쓴다.
  * - 녹음은 메모리(Blob URL)에만 두고 저장·전송하지 않는다.
  * ========================================================= */
 (function () {
@@ -32320,7 +32358,7 @@ window.App.Pinyin.wordsZhGlue = "一过|不着|不过|不过如此|为了|为着
       noReferrer: '유튜브가 이 앱의 주소를 확인하지 못해요. 앱을 https:// 주소로 열어야 재생돼요.', loadFail: '유튜브 재생기를 불러오지 못했어요 (인터넷 연결을 확인해 주세요).', openYt: '유튜브에서 열기',
       prev: '이전 문장', next: '다음 문장', star: '어려운 문장 ★', settings: '설정', cont: '계속 ▶', rec: '녹음', recStop: '녹음 끝내기',
       mine: '내 소리', orig: '원음', micFail: '마이크를 쓸 수 없어요', sayIt: '말해 보세요', trimS: '시작', trimE: '끝', trimInfo: '구간 다듬기 (0.2초씩)',
-      gap: '쉼', manual: '수동', rep: '반복', speed: '속도', hide: '가리기', hFull: '전체', hHint: '힌트', hHide: '숨김', ko: '해석', auto: '자동 다음', starOnly: '★만', on: '켬', off: '끔', times: '회' },
+      gap: '쉼', manual: '수동', rep: '반복', speed: '속도', hide: '가리기', hFull: '전체', hHint: '힌트', hHide: '숨김', ko: '해석', ruby: '읽기', auto: '자동 다음', starOnly: '★만', on: '켬', off: '끔', times: '회' },
     en: { open: 'Open video script', title: 'Video script', close: 'Close',
       badHeader: 'Not a video script document (.wsv.txt)', badUrl: 'The document has no usable video URL', badEmpty: 'The document has no sentences',
       skipped: 'Skipped {n} unreadable lines', readFail: 'Could not read the file',
@@ -32329,7 +32367,7 @@ window.App.Pinyin.wordsZhGlue = "一过|不着|不过|不过如此|为了|为着
       noReferrer: 'YouTube cannot verify this app\'s address. Open the app from an https:// address to play.', loadFail: 'Could not load the YouTube player (check your connection).', openYt: 'Open on YouTube',
       prev: 'Previous', next: 'Next', star: 'Hard sentence ★', settings: 'Settings', cont: 'Continue ▶', rec: 'Record', recStop: 'Stop recording',
       mine: 'My voice', orig: 'Original', micFail: 'Cannot use the microphone', sayIt: 'Say it now', trimS: 'Start', trimE: 'End', trimInfo: 'Trim (0.2s steps)',
-      gap: 'Gap', manual: 'manual', rep: 'Repeat', speed: 'Speed', hide: 'Hide', hFull: 'All', hHint: 'Hint', hHide: 'Hidden', ko: 'Meaning', auto: 'Auto next', starOnly: '★ only', on: 'on', off: 'off', times: 'x' }
+      gap: 'Gap', manual: 'manual', rep: 'Repeat', speed: 'Speed', hide: 'Hide', hFull: 'All', hHint: 'Hint', hHide: 'Hidden', ko: 'Meaning', ruby: 'Reading', auto: 'Auto next', starOnly: '★ only', on: 'on', off: 'off', times: 'x' }
   };
   function L(key) {
     const lang = (window.App?.I18N?.currentUILang === 'en') ? 'en' : 'ko';
@@ -32366,11 +32404,12 @@ window.App.Pinyin.wordsZhGlue = "一过|不着|不过|不过如此|为了|为着
 .vs-star { flex: none; width: 44px; border: 0; background: transparent; color: inherit; font-size: 20px; cursor: pointer; border-radius: 10px; }
 .vs-rowbtn .vs-t { font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
 .vs-rowbtn .vs-s { font-size: 18px; line-height: 1.4; overflow-wrap: anywhere; }
+.vs-rowbtn .vs-s rt { font-size: 0.55em; color: var(--text-secondary); }
 .vs-rowbtn .vs-k { font-size: 14px; line-height: 1.4; color: var(--text-secondary); overflow-wrap: anywhere; }
 .header-tray .vs-open-btn { font-size: 16px; }
 `;
 
-  const DEFAULTS = { pause: 1, rep: 1, rate: 1, hide: 'full', ko: true, auto: true, starOnly: false };
+  const DEFAULTS = { pause: 1, rep: 1, rate: 1, hide: 'full', ko: true, ruby: true, auto: true, starOnly: false };
   const PAUSES = [0.5, 1, 1.5, 0]; // 0 = 수동(누를 때까지 대기)
   const REPS = [1, 3, 5, 0]; // 0 = 무한
   const RATES = [1, 0.75, 0.5];
@@ -32473,11 +32512,25 @@ window.App.Pinyin.wordsZhGlue = "一过|不着|不过|不过如此|为了|为着
     return _S.hide === 'hint' ? VS.hint(r.text) : '• • •';
   }
 
+  // 읽기는 정답이 그대로 보이는 때만 그린다. 가리기(힌트·숨김)에서는 읽기가 정답을 알려 주므로 같이 가린다.
+  function _fillSentence(el, r, shown) {
+    const segs = (_S.ruby && shown === r.text) ? VS.rubyFor(r) : null;
+    if (!segs) { el.textContent = shown; return; }
+    el.textContent = '';
+    segs.forEach((g) => {
+      if (!g.rt) { el.appendChild(document.createTextNode(g.t)); return; }
+      const ru = document.createElement('ruby');
+      ru.appendChild(document.createTextNode(g.t));
+      ru.appendChild(_el('rt', '', g.rt));
+      el.appendChild(ru);
+    });
+  }
+
   function _renderRow(i) {
     const o = _rows[i];
     if (!o) return;
     const r = _doc.rows[i];
-    o.s.textContent = _textFor(i);
+    _fillSentence(o.s, r, _textFor(i));
     const showKo = _S.ko && r.ko && r.ko !== r.text;
     o.k.hidden = !showKo;
     o.star.textContent = (_V.star && _V.star[i]) ? '★' : '☆';
@@ -32793,6 +32846,7 @@ window.App.Pinyin.wordsZhGlue = "一过|不着|不过|不过如此|为了|为着
       _chip(L('speed'), () => '×' + _S.rate, () => { _S.rate = _next(RATES, _S.rate); if (_player && _player.setPlaybackRate) _player.setPlaybackRate(_S.rate); }),
       _chip(L('hide'), () => L(_S.hide === 'full' ? 'hFull' : _S.hide === 'hint' ? 'hHint' : 'hHide'), () => { _S.hide = _next(HIDES, _S.hide); }),
       _chip(L('ko'), () => L(_S.ko ? 'on' : 'off'), () => { _S.ko = !_S.ko; }),
+      ...(_doc.rows.some((r) => r.ruby) ? [_chip(L('ruby'), () => L(_S.ruby ? 'on' : 'off'), () => { _S.ruby = !_S.ruby; })] : []),
       _chip(L('auto'), () => L(_S.auto ? 'on' : 'off'), () => { _S.auto = !_S.auto; }),
       _chip(L('starOnly'), () => L(_S.starOnly ? 'on' : 'off'), () => { _S.starOnly = !_S.starOnly; })
     ];
@@ -32814,7 +32868,7 @@ window.App.Pinyin.wordsZhGlue = "一过|不着|不过|不过如此|为了|为着
       const b = _el('button', 'vs-rowbtn');
       b.type = 'button';
       b.appendChild(_el('div', 'vs-t', _fmt(r.start)));
-      const s = _el('div', 'vs-s', r.text);
+      const s = _el('div', 'vs-s');
       if (doc.study) s.lang = doc.study;
       b.appendChild(s);
       const k = _el('div', 'vs-k', r.ko);
